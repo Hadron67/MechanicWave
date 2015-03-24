@@ -1,0 +1,36 @@
+XX=gcc
+GTK=-mms-bitfields -IC:/gtk/include/gtk-2.0 -IC:/gtk/lib/gtk-2.0/include -IC:/gtk/include/atk-1.0 -IC:/gtk/include/cairo -IC:/gtk/include/gdk-pixbuf-2.0 -IC:/gtk/include/pango-1.0 -IC:/gtk/include/glib-2.0 -IC:/gtk/lib/glib-2.0/include -IC:/gtk/include -IC:/gtk/include/freetype2 -IC:/gtk/include/libpng14  -LC:/gtk/lib -lgtk-win32-2.0 -lgdk-win32-2.0 -latk-1.0 -lgio-2.0 -lpangowin32-1.0 -lgdi32 -lpangocairo-1.0 -lgdk_pixbuf-2.0 -lpango-1.0 -lcairo -lgobject-2.0 -lgmodule-2.0 -lgthread-2.0 -lglib-2.0 -lintl  
+PYTHON_INCLUDE=-IC:\Python34\include
+PYTHON_LINKS=-LC:\Python34\libs -lpython34
+LIBS=-lm -lgfortran
+OBJECTS=main.o window1.o window_python.o mechanic_wave_c.o mechanic_wave_fortran.o mechanic_wave_python.o bundle.o messagebox.o
+OBJ_PYTHON_C=mechanic_wave_python.c mechanic_wave_python.c mechanic_wave_python.h mechanic_wave.h bundle.h bundle.c
+ARGS=-std=c99
+DEBUG=-g -ggdb
+wave:$(OBJECTS)
+	$(XX) -o wave $(OBJECTS) $(LIBS) $(GTK) $(PYTHON_LINKS) $(DEBUG)
+	rm $(OBJECTS)
+main.o:main.c window1.h window1.c
+	$(XX) -c -o main.o main.c $(GTK) $(ARGS) $(DEBUG)
+window1.o:window1.c mechanic_wave.h mechanic_wave.c
+	$(XX) -c -o window1.o window1.c $(GTK) $(ARGS) $(DEBUG)
+window_python.o:window_python.c mechanic_wave_python.h mechanic_wave_python.c messagebox.c messagebox.h
+	$(XX) -c -o window_python.o window_python.c $(GTK) $(ARGS) $(DEBUG)
+mechanic_wave_c.o:mechanic_wave.c
+	$(XX) -c -o mechanic_wave_c.o mechanic_wave.c $(ARGS) $(DEBUG) 
+mechanic_wave_fortran.o:mechanic_wave.f
+	$(XX) -c -o mechanic_wave_fortran.o mechanic_wave.f $(DEBUG)
+mechanic_wave_python.o:$(OBJ_PYTHON_C)
+	$(XX) -c -o mechanic_wave_python.o mechanic_wave_python.c $(PYTHON_INCLUDE) $(ARGS) $(DEBUG)
+bundle.o:bundle.c
+	$(XX) -c -o bundle.o bundle.c $(ARGS) $(DEBUG)
+messagebox.o:messagebox.c
+	$(XX) -c -o messagebox.o messagebox.c $(GTK) $(DEBUG)
+debug:$(OBJECTS)
+	$(DEBUG)=-g -ggdb
+	$(XX) -o wave $(OBJECTS) $(LIBS) $(GTK) $(DEBUG)
+	rm $(OBJECTS)
+.PHONY:clean
+soor:
+	-rm wave
+	-rm $(OBJECTS)
